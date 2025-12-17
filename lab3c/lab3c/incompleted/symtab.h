@@ -25,7 +25,7 @@ enum ObjectKind {
   OBJ_PROGRAM
 };
 
-enum ParamKind {
+enum ParamKind {  
   PARAM_VALUE,
   PARAM_REFERENCE
 };
@@ -164,4 +164,5 @@ void enterBlock(Scope* scope);
 void exitBlock(void);
 void declareObject(Object* obj);
 
+Object* lookupObject(char *name);
 #endif

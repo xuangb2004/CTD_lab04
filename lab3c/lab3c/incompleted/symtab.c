@@ -1,9 +1,4 @@
-/* 
- * @copyright (c) 2008, Hedspi, Hanoi University of Technology
- * @author Huu-Duc Nguyen
- * @version 1.0
- */
-
+/* symtab.c */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,13 +37,13 @@ Type* makeArrayType(int arraySize, Type* elementType) {
 }
 
 Type* duplicateType(Type* type) {
-  Type* resultType = (Type*) malloc(sizeof(Type));
-  resultType->typeClass = type->typeClass;
+  Type* t = (Type*) malloc(sizeof(Type));
+  t->typeClass = type->typeClass;
   if (type->typeClass == TP_ARRAY) {
-    resultType->arraySize = type->arraySize;
-    resultType->elementType = duplicateType(type->elementType);
+    t->arraySize = type->arraySize;
+    t->elementType = duplicateType(type->elementType);
   }
-  return resultType;
+  return t;
 }
 
 int compareType(Type* type1, Type* type2) {
@@ -77,17 +72,17 @@ void freeType(Type* type) {
 /******************* Constant utility ******************************/
 
 ConstantValue* makeIntConstant(int i) {
-  ConstantValue* value = (ConstantValue*) malloc(sizeof(ConstantValue));
-  value->type = TP_INT;
-  value->intValue = i;
-  return value;
+  ConstantValue* v = (ConstantValue*) malloc(sizeof(ConstantValue));
+  v->type = TP_INT;
+  v->intValue = i;
+  return v;
 }
 
 ConstantValue* makeCharConstant(char ch) {
-  ConstantValue* value = (ConstantValue*) malloc(sizeof(ConstantValue));
-  value->type = TP_CHAR;
-  value->charValue = ch;
-  return value;
+  ConstantValue* v = (ConstantValue*) malloc(sizeof(ConstantValue));
+  v->type = TP_CHAR;
+  v->charValue = ch;
+  return v;
 }
 
 ConstantValue* duplicateConstantValue(ConstantValue* v) {
@@ -331,4 +326,16 @@ void declareObject(Object* obj) {
   addObject(&(symtab->currentScope->objList), obj);
 }
 
+Object* lookupObject(char *name) {
+  Scope* scope = symtab->currentScope;
+  Object* obj;
 
+  while (scope != NULL) {
+    obj = findObject(scope->objList, name);
+    if (obj != NULL) return obj;
+    scope = scope->outer;
+  }
+  obj = findObject(symtab->globalObjectList, name);
+  if (obj != NULL) return obj;
+  return NULL;
+}
